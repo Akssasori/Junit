@@ -10,8 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import static com.example.swplanetapi.common.PlanetConstants.INVALID_PLANET;
-import static com.example.swplanetapi.common.PlanetConstants.PLANET;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+import static com.example.swplanetapi.common.PlanetConstants.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 
@@ -42,6 +46,20 @@ public class PlanetServiceTest {
         when(planetRepository.save(INVALID_PLANET)).thenThrow(RuntimeException.class);
         Assertions.assertThatThrownBy(() -> planetService.create(INVALID_PLANET));
 
+    }
+    @Test
+    public void getPlanet_ByExistingId_ReturnsPlanet() {
+
+        when(planetRepository.findById(anyLong())).thenReturn(Optional.of(PLANET));
+        Optional<Planet> planet = planetService.get(anyLong());
+        Assertions.assertThat(planet.get()).isEqualTo(PLANET);
 
     }
+    @Test
+    public void getPlanet_ByUnexistingId_ReturnsPlanet() {
+        when(planetRepository.findById(anyLong())).thenReturn(Optional.empty());
+        Optional<Planet> planet = planetService.get(anyLong());
+        Assertions.assertThat(planet).isEqualTo(OPTIONAL_EMPYTY_PLANET);
+    }
+
 }
