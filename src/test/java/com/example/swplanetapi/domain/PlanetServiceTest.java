@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 
 import static com.example.swplanetapi.common.PlanetConstants.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -106,7 +106,22 @@ public class PlanetServiceTest {
 
         Assertions.assertThat(list).isEmpty();
 
+    }
+    @Test
+    public void removePlanet_WithExistingId_doesNotThrowAnyException() {
 
+//        doNothing().when(planetRepository).deleteById(1L);
+//        planetService.remove(1L);
+//
+//        verify(planetRepository, times(1)).deleteById(1L);
+        Assertions.assertThatCode(() -> planetService.remove(1L)).doesNotThrowAnyException();
+
+    }
+
+    @Test
+    public void removePlanet_WithExistingId_ThrowAnyException() {
+        doThrow(new RuntimeException()).when(planetRepository).deleteById(99L);
+        Assertions.assertThatThrownBy(() -> planetService.remove(99L)).isInstanceOf(RuntimeException.class);
     }
 
 
