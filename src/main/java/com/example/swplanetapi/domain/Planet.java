@@ -3,6 +3,7 @@ package com.example.swplanetapi.domain;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "planets")
@@ -11,8 +12,14 @@ public class Planet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false, unique = true) //não pode ser nulo
+    @NotEmpty()
     private String name;
+    @Column(nullable = false)
+    @NotEmpty()
     private String climate;
+    @Column(nullable = false)
+    @NotEmpty()
     private String terrain;
 
     public Planet() {
