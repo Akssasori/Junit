@@ -6,13 +6,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+
 import org.springframework.data.domain.Example;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 import static com.example.swplanetapi.common.PlanetConstants.*;
 import static org.mockito.ArgumentMatchers.*;
