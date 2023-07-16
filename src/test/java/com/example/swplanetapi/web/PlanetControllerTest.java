@@ -13,7 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.mockito.ArgumentMatchers.any;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -37,17 +39,18 @@ public class PlanetControllerTest {
         when(planetService.create(PLANET)).thenReturn(PLANET);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/planets")
-                .content(objectMapper.writeValueAsString(PLANET))
-                                .contentType(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(PLANET))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$").value(PLANET));
 
     }
+
     @Test
     public void createPlanet_WithInValidData_ReturnsBadRequest() throws Exception {
 
         Planet emptyPlanet = new Planet();
-        Planet invalidPlanet = new Planet("","","");
+        Planet invalidPlanet = new Planet("", "", "");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/planets")
                         .content(objectMapper.writeValueAsString(emptyPlanet))
@@ -66,11 +69,55 @@ public class PlanetControllerTest {
         when(planetService.create(any())).thenThrow(DataIntegrityViolationException.class);
 
         mockMvc.perform(MockMvcRequestBuilders
-                .post("/planets")
-                .content(objectMapper.writeValueAsString(PLANET))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .post("/planets")
+                        .content(objectMapper.writeValueAsString(PLANET))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict());
 
+    }
+
+    @Test
+    public void getPlanet_ByExistingId_ReturnsPlanets() throws Exception {
+
+        when(planetService.get(1L)).thenReturn(Optional.of(PLANET));
+
+//        mockMvc.perform(MockMvcRequestBuilders.get("/planets")
+//                .param("id", "1"))
+//                .andExpect(status().isOk());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/planets/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(PLANET));
+
+    }
+
+    @Test
+    public void getPlanet_ByUnexistingId_ReturnsNotFound() throws Exception {
+
+//        when(planetService.get(anyLong())).thenThrow(RuntimeException.class);
+        // sem p when o serviço no teste não retorna nada sendo assim ja daria o erro que queremos para ele laçar
+        //not found
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/planets/1"))
+                .andExpect(status().isNotFound());
+
+    }
+    @Test
+    public void getPlanet_ByExistingName_ReturnsPlanet() throws Exception {
+
+        when(planetService.getByName("jupiter")).thenReturn(Optional.of(PLANET));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/planets/name/jupiter"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(PLANET));
+
+    }
+
+    @Test
+    public void getPlanet_ByUnexistingName_ReturnsPlanet() throws Exception {
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/planets/name/name"))
+                .andExpect(status().isNotFound());
     }
 
 }

@@ -3,10 +3,13 @@ package com.example.swplanetapi.domain;
 import static com.example.swplanetapi.common.PlanetConstants.*;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+
+import java.util.Optional;
 
 @DataJpaTest
 public class PlanetRepositoryTest {
@@ -16,6 +19,14 @@ public class PlanetRepositoryTest {
 
     @Autowired
     private TestEntityManager testEntityManager;
+
+    @AfterEach
+    public void afterEach() {
+        PLANET.setId(null);  //depois de cada teste zero o id
+        // e necessario pq usamos a conatnte PLANET em todos os testes sendo assim ele sempre tem id no banco
+        // e quando usar mais de um persistAndFlush o segunda não vai cosneguir salvar
+        //pq o primeiro persistaAndFlush já o salvou e já recebeu id
+    }
 
     @Test
     public void createPlanet_WithValidData_ReturnsPlanet() {
@@ -43,6 +54,51 @@ public class PlanetRepositoryTest {
         planet.setId(null);
 
         Assertions.assertThatThrownBy(() -> planetRepository.save(planet)).isInstanceOf(RuntimeException.class);
+
+    }
+    @Test
+    public void getPlanet_ByExistingId_ReturnsPlanets() {
+
+        Planet sut = testEntityManager.persistFlushFind(PLANET);
+        Optional<Planet> planet = planetRepository.findById(sut.getId());
+
+        Assertions.assertThat(planet.get()).isNotNull();
+        Assertions.assertThat(sut.getName()).isEqualTo(PLANET.getName());
+        Assertions.assertThat(sut.getClimate()).isEqualTo(PLANET.getClimate());
+
+        Assertions.assertThat(planet).isNotEmpty();
+        Assertions.assertThat(planet.get()).isEqualTo(sut);
+
+
+    }
+    @Test
+    public void getPlanet_ByUnexistingId_ReturnsNotFound() {
+
+        Optional<Planet> planetOpt = planetRepository.findById(1L);
+        Assertions.assertThat(planetOpt).isEmpty();
+
+
+    }
+    @Test
+    public void getPlanet_ByExistingName_ReturnsPlanet() {
+
+        Planet sut = testEntityManager.persistFlushFind(PLANET);
+        Optional<Planet> planet = planetRepository.findByName(sut.getName());
+
+        Assertions.assertThat(planet.get()).isNotNull();
+        Assertions.assertThat(sut.getName()).isEqualTo(PLANET.getName());
+        Assertions.assertThat(sut.getClimate()).isEqualTo(PLANET.getClimate());
+
+        Assertions.assertThat(planet).isNotEmpty();
+        Assertions.assertThat(planet.get()).isEqualTo(sut);
+
+    }
+    @Test
+    public void getPlanet_ByUnexistingName_ReturnsPlanet() {
+
+        Optional<Planet> planetOpt = planetRepository.findByName("exemplo");
+        Assertions.assertThat(planetOpt).isEmpty();
+
 
     }
 }
