@@ -79,7 +79,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <executions>
-					<execution>
+                    <execution>
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
@@ -87,25 +87,20 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-
-<!--                exclusões-->
                 <configuration>
                     <excludes>
                         <exclude>com/example/swplanetapi/SwPlanetApiApplication.class</exclude>
                     </excludes>
                 </configuration>
-
                 <executions>
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
-
                     <execution>
                         <id>report</id>
                         <phase>prepare-package</phase>
@@ -115,7 +110,37 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.8.0</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>0.14</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <targetTests>
+                        <param>com.example.swplanetapi.*Test</param>
+                    </targetTests>
+                    <excludedClasses>
+                        <param>com.example.swplanetapi.domain.Planet</param>
+                    </excludedClasses>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>1.17.4</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>
