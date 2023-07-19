@@ -130,11 +130,10 @@ public class PlanetRepositoryTest {
 
     @Test
     public void listPlanets_ReturnsNoPlanets() {
-
         Example<Planet> query = QueryBuilder.makeQuery(new Planet());
-        List<Planet> response = planetRepository.findAll(query);
 
-        Assertions.assertThat(response).isNotEmpty();
+        List<Planet> response = planetRepository.findAll(query);
+        Assertions.assertThat(response).isEmpty();
 
     }
     @Test

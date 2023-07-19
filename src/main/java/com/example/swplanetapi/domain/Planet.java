@@ -1,5 +1,6 @@
 package com.example.swplanetapi.domain;
 
+import com.example.swplanetapi.jacoco.ExcludeFromJacocoGeneratedReport;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.persistence.*;
@@ -75,6 +76,7 @@ public class Planet {
         this.terrain = terrain;
     }
 
+    @ExcludeFromJacocoGeneratedReport
     @Override
     public String toString() {
         return "Planet{" +
